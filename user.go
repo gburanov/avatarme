@@ -1,7 +1,14 @@
 package main
 
-type User string
+import (
+  "crypto/md5"
+)
+
+type User []byte
 
 func NewUser(email string) User {
-  return User(email)
+  hash := md5.New()
+  bytes := hash.Sum([]byte(email))
+
+  return User(bytes)
 }
