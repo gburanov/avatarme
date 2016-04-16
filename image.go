@@ -1,6 +1,7 @@
 package main
 
 import (
+  "errors"
   "image"
   "image/color"
   "image/color/palette"
@@ -27,10 +28,31 @@ func Rect(x1, y1, x2, y2 int, img *image.RGBA, col color.Color) {
     VLine(x2, y1, y2, img, col)
 }
 
+func FilledRect(x1, y1, x2, y2 int, img *image.RGBA, col color.Color) {
+  for y:= y1; y < y2; y++ {
+    HLine(x1, y, x2, img, col)
+  }
+}
+
+func (user *User) ColorForNumber(i int) (error, *color.Color) {
+  if (i > 32) {
+    return errors.New("Invalid number"), nil
+  }
+
+  bytes:= []byte(*user)
+  return nil, &palette.Plan9[bytes[i]]
+}
+
 func (user *User) generateImage() image.Image {
   side := 40
   m := image.NewRGBA(image.Rect(0, 0, side, side))
-  Rect(0, 0, 10, 10, m, palette.Plan9[200])
-  Rect(10, 10, 20, 20, m, palette.Plan9[100])
+  i := 0
+  for x := 0; x < 4; x++ {
+    for y:= 0; y < 4; y++ {
+      _, color := user.ColorForNumber(i)
+      i++
+      FilledRect(x * 10, y * 10, x * 10 + 10, y * 10 + 10, m, *color)
+    }
+  }
   return m
 }
