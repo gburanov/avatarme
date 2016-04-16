@@ -2,15 +2,23 @@ package main
 
 import (
   "log"
+  "fmt"
 )
 
-func main() {
-  email := "gburanov@gmail.com"
-
+func ProcessEmail(email string) {
+  fmt.Println("Got email", email)
   user := NewUser(email)
   image := user.generateImage()
   err := SaveToS3(&image, email)
   if err != nil {
     log.Fatal(err)
+  }
+}
+
+func main() {
+  for {
+    message := ReadMessage()
+    ProcessEmail(message.Body)
+    DeleteMessage(message)
   }
 }
